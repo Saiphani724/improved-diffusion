@@ -320,7 +320,7 @@ class UNetModel(nn.Module):
         if num_heads_upsample == -1:
             num_heads_upsample = num_heads
 
-        self.in_channels = in_channels
+        self.in_channels = in_channels * 2
         self.model_channels = model_channels
         self.out_channels = out_channels
         self.num_res_blocks = num_res_blocks
@@ -478,7 +478,8 @@ class UNetModel(nn.Module):
         if self.num_classes is not None:
             assert y.shape == (x.shape[0],)
             emb = emb + self.label_emb(y)
-
+            
+        x = th.cat((x, x), axis = 1)
         h = x.type(self.inner_dtype)
         for module in self.input_blocks:
             h = module(h, emb)
